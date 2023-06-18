@@ -13,25 +13,46 @@ module.exports = {
 
   // get a single user
   async getSingleUser(req, res) {
-    try {
-      const user = await User.findOne({ _id: req.params.userId })
-        .select("-__v")
-        .populate("thoughts", "friends");
+    //res.json({ debug: req.params.userId });
+    //try {
+    const user = await User.findOne({ _id: req.params.userId })
+      .populate("thoughts")
+      .populate("friends")
+      .select("-__v");
 
-      if (!user) {
-        return res.status(404).json({ message: "No user with that ID" });
-      }
-
-      res.json(user);
-    } catch (err) {
-      res.status(500).json(err);
+    if (!user) {
+      return res.status(404).json({ message: "No user with that ID" });
     }
+
+    res.json(user);
+    //} catch (err) {
+    //  res.status(500).json(err);
+    //}
   },
   // create a new user
   async createUser(req, res) {
     try {
       const dbUserData = await User.create(req.body);
       res.json(dbUserData);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  // update an user
+  async updateUser(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        req.body,
+        {
+          new: true,
+        }
+      );
+
+      if (!user) {
+        return res.status(404).json({ message: "No such user exists" });
+      }
+      res.json(user);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -54,12 +75,12 @@ module.exports = {
   // Add a friend to an user
   async addFriend(req, res) {
     console.log("You are adding a friend");
-    console.log(req.body);
+    // console.log(req.body);
 
     try {
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        { $addToSet: { friends: req.body } },
+        { $addToSet: { friends: req.params.friendId } }, // set is in math/programming: unique values array
         { runValidators: true, new: true }
       );
 
@@ -80,7 +101,7 @@ module.exports = {
     try {
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        { $pull: { friends: { friendId: req.params.friendId } } },
+        { $pull: { friends: req.params.friendId } }, // push can add duplicates
         { runValidators: true, new: true }
       );
 
