@@ -29,7 +29,7 @@ This is an API for a social network web application where users can share their 
 ## Links
 
 - GitHub: https://github.com/Chenson92/Social-Network-API
-- WalkThrough Video:
+- WalkThrough Video:https://drive.google.com/file/d/1C2WYTf_gZu3l1BUIwkHCP-oXbr6GZKI-/view
 
 ## License
 
